@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #4F46E5;
+  --secondary-color: #A855F7;
+  --background-color: #F9FAFB;
+  --text-color: #1F2937;
+  --light-gray: #F3F4F6;
+  --border-color: #E5E7EB;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Custom classes */
+@layer components {
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md;
+  }
+  
+  .btn-secondary {
+    @apply bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-md;
+  }
+  
+  .input-field {
+    @apply border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500;
+  }
+  
+  .chat-container {
+    @apply flex flex-col h-full;
+  }
+  
+  .message-bubble {
+    @apply p-3 rounded-lg max-w-[75%] my-1;
+  }
+  
+  .user-message {
+    @apply bg-indigo-600 text-white self-end;
+  }
+  
+  .ai-message {
+    @apply bg-gray-200 text-gray-800 self-start;
+  }
+}
