@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # Django Backend
+  backend:
+    build: ./gptinder_back
+    container_name: gptinder-backend-dev
+    restart: always
+    volumes:
+      - ./gptinder_back:/app
+      - backend_media:/app/media
+      - backend_static:/app/staticfiles
+    env_file:
+      - ./gptinder_back/.env
+    ports:
+      - "8000:8000"
+    networks:
+      - gptinder-network-dev
+    command: python manage.py runserver 0.0.0.0:8000
+
+  # React Frontend in Development Mode
+  frontend:
+    build:
+      context: ./gptinder_front
+      dockerfile: Dockerfile.dev
+    container_name: gptinder-frontend-dev
+    restart: always
+    volumes:
+      - ./gptinder_front:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - gptinder-network-dev
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+
+networks:
+  gptinder-network-dev:
+    driver: bridge
+
+volumes:
+  backend_media:
+  backend_static: 
