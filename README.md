@@ -13,13 +13,13 @@ GPTinder - это приложение для общения с ИИ и знак
 
 - **Бэкенд**: Django, Django REST Framework
 - **Фронтенд**: React, TypeScript, Redux, Tailwind CSS
-- **Контейнеризация**: Docker, Docker Compose
 
-## Запуск приложения с помощью Docker
+## Запуск приложения
 
 ### Предварительные требования
 
-- Docker и Docker Compose
+- Python 3.11+
+- Node.js 20+
 - API-ключ OpenAI
 
 ### Настройка переменных окружения
@@ -30,31 +30,7 @@ GPTinder - это приложение для общения с ИИ и знак
 OPENAI_API_KEY=sk-your-api-key
 ```
 
-### Запуск в производственном режиме
-
-```bash
-# Сборка и запуск контейнеров
-docker-compose up -d --build
-
-# Приложение будет доступно по адресу:
-# - Frontend: http://localhost
-# - Backend API: http://localhost/api
-```
-
-### Запуск в режиме разработки
-
-```bash
-# Сборка и запуск контейнеров для разработки
-docker-compose -f docker-compose.dev.yml up -d --build
-
-# Приложение будет доступно по адресу:
-# - Frontend: http://localhost:5173
-# - Backend API: http://localhost:8000/api
-```
-
-## Разработка без Docker
-
-### Бэкенд
+### Запуск бэкенда
 
 ```bash
 cd gptinder_back
@@ -65,7 +41,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-### Фронтенд
+### Запуск фронтенда
 
 ```bash
 cd gptinder_front

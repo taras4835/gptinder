@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Локальный URL для API
 const API_URL = 'http://localhost:8000/api';
 
 const api = axios.create({
