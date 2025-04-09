@@ -3,7 +3,6 @@ djangorestframework
 django-cors-headers
 python-dotenv
 openai
-Pillow
 numpy
 boto3
 dj-database-url
