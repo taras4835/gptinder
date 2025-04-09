@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Локальный URL для API
-const API_URL = 'http://localhost:8000/api';
+// URL для API из переменной окружения
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 const api = axios.create({
   baseURL: API_URL,

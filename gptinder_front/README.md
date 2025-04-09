@@ -52,3 +52,21 @@ export default tseslint.config({
   },
 })
 ```
+
+## Environment Variables
+
+The application uses environment variables for configuration. Create a `.env` file in the root directory with the following variables:
+
+```
+VITE_API_URL=http://localhost:8000/api
+```
+
+You can also copy the `.env.example` file and rename it to `.env`:
+
+```
+cp .env.example .env
+```
+
+These variables are:
+
+- `VITE_API_URL`: The URL of the backend API
