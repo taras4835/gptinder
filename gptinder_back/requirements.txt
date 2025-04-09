@@ -16,3 +16,4 @@ redis
 pyTelegramBotAPI
 drf-yasg
 gunicorn
+pillow
