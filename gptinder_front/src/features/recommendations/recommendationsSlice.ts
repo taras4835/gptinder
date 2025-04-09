@@ -219,6 +219,9 @@ const recommendationsSlice = createSlice({
       })
       .addCase(createUserChat.fulfilled, (state, action: PayloadAction<UserChat>) => {
         state.isLoading = false;
+        if (!Array.isArray(state.userChats)) {
+          state.userChats = [];
+        }
         state.userChats.unshift(action.payload);
         state.currentUserChat = action.payload;
       })
@@ -239,6 +242,11 @@ const recommendationsSlice = createSlice({
           // Add the message to the current chat
           state.currentUserChat.messages.push(action.payload.message);
           state.currentUserChat.last_message = action.payload.message;
+        }
+        
+        // Ensure userChats is an array
+        if (!Array.isArray(state.userChats)) {
+          state.userChats = [];
         }
         
         // Update the chat in the list

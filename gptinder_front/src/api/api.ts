@@ -32,6 +32,18 @@ export const authApi = {
   register: (userData: any) => api.post('/users/', userData),
   
   getCurrentUser: () => api.get('/users/me/'),
+  
+  updateProfile: (userData: FormData) => {
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+    return api.patch('/users/me/', userData, config);
+  },
+  
+  updatePassword: (current_password: string, new_password: string) => 
+    api.post('/change-password/', { current_password, new_password }),
 };
 
 // AI Chat services

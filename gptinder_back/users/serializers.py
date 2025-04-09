@@ -82,4 +82,24 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(msg, code='authorization')
         
         data['user'] = user
-        return data 
+        return data
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """Serializer for changing password"""
+    current_password = serializers.CharField(
+        style={'input_type': 'password'},
+        trim_whitespace=False
+    )
+    new_password = serializers.CharField(
+        style={'input_type': 'password'},
+        trim_whitespace=False
+    )
+    
+    def validate_new_password(self, value):
+        """Ensure password is strong enough"""
+        if len(value) < 8:
+            raise serializers.ValidationError(
+                _("Password must be at least 8 characters long.")
+            )
+        return value 

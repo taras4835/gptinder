@@ -83,6 +83,30 @@ export const getCurrentUser = createAsyncThunk(
   }
 );
 
+export const updateProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async (userData: FormData, { rejectWithValue }) => {
+    try {
+      const response = await authApi.updateProfile(userData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || 'Failed to update profile');
+    }
+  }
+);
+
+export const updatePassword = createAsyncThunk(
+  'auth/updatePassword',
+  async ({ current_password, new_password }: { current_password: string; new_password: string }, { rejectWithValue }) => {
+    try {
+      const response = await authApi.updatePassword(current_password, new_password);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || 'Failed to update password');
+    }
+  }
+);
+
 // Slice
 const authSlice = createSlice({
   name: 'auth',
@@ -153,6 +177,33 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.token = null;
         state.user = null;
+        state.error = action.payload as string;
+      })
+      
+      // Update profile
+      .addCase(updateProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action: PayloadAction<User>) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      
+      // Update password
+      .addCase(updatePassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updatePassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
+        state.isLoading = false;
         state.error = action.payload as string;
       });
   },

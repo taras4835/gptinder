@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from django.contrib.auth import login
 
 from .models import User
-from .serializers import UserSerializer, UserCreateSerializer, LoginSerializer
+from .serializers import UserSerializer, UserCreateSerializer, LoginSerializer, ChangePasswordSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -46,13 +46,20 @@ class UserViewSet(viewsets.ModelViewSet):
             return User.objects.all()
         return User.objects.filter(id=user.id)
     
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get', 'patch'])
     def me(self, request):
         """
-        Return the current user's profile
+        Return or update the current user's profile
         """
-        serializer = self.get_serializer(request.user)
-        return Response(serializer.data)
+        if request.method == 'PATCH':
+            instance = request.user
+            serializer = self.get_serializer(instance, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data)
 
 
 class LoginView(generics.GenericAPIView):
@@ -93,3 +100,32 @@ class LogoutView(generics.GenericAPIView):
             pass
         
         return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
+
+
+class ChangePasswordView(generics.GenericAPIView):
+    """
+    Change Password API view
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        user = request.user
+        current_password = serializer.validated_data['current_password']
+        new_password = serializer.validated_data['new_password']
+        
+        # Check if the current password is correct
+        if not user.check_password(current_password):
+            return Response(
+                {"current_password": ["Wrong password."]}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Set new password
+        user.set_password(new_password)
+        user.save()
+        
+        return Response({"detail": "Password updated successfully."}, status=status.HTTP_200_OK)

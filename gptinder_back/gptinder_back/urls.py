@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 
-from users.views import UserViewSet, LoginView, LogoutView
+from users.views import UserViewSet, LoginView, LogoutView, ChangePasswordView
 from ai_chat.views import ChatViewSet
 from recommendations.views import UserRecommendationViewSet, UserChatViewSet, UserMessageViewSet
 
@@ -37,6 +37,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/login/', LoginView.as_view(), name='login'),
     path('api/logout/', LogoutView.as_view(), name='logout'),
+    path('api/change-password/', ChangePasswordView.as_view(), name='change-password'),
     path('api-auth/', include('rest_framework.urls')),
 ]
 

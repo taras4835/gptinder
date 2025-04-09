@@ -140,6 +140,9 @@ const chatSlice = createSlice({
       })
       .addCase(createChat.fulfilled, (state, action: PayloadAction<Chat>) => {
         state.isLoading = false;
+        if (!Array.isArray(state.chats)) {
+          state.chats = [];
+        }
         state.chats.unshift(action.payload);
         state.currentChat = action.payload;
       })

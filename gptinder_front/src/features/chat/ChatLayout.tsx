@@ -34,7 +34,7 @@ const ChatLayout = () => {
   }, [dispatch]);
   
   const handleCreateChat = () => {
-    dispatch(createChat()).then((result) => {
+    dispatch(createChat('')).then((result) => {
       if (createChat.fulfilled.match(result)) {
         navigate(`/chat/${result.payload.id}`);
       }
@@ -113,14 +113,14 @@ const ChatLayout = () => {
             <div className="flex-1 overflow-y-auto">
               {activeTab === 'ai' && (
                 <ChatList 
-                  chats={chats} 
+                  chats={Array.isArray(chats) ? chats : []} 
                   isLoading={chatsLoading} 
                 />
               )}
               
               {activeTab === 'people' && (
                 <RecommendationsList 
-                  recommendations={recommendations}
+                  recommendations={Array.isArray(recommendations) ? recommendations : []}
                   isLoading={recommendationsLoading}
                   onGenerateRecommendations={handleGenerateRecommendations}
                 />
@@ -128,7 +128,7 @@ const ChatLayout = () => {
               
               {activeTab === 'chats' && (
                 <UserChatList 
-                  userChats={userChats}
+                  userChats={Array.isArray(userChats) ? userChats : []}
                   isLoading={recommendationsLoading}
                 />
               )}
@@ -151,12 +151,20 @@ const ChatLayout = () => {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-700">{user?.username}</p>
-                  <button
-                    onClick={handleLogout}
-                    className="text-xs text-gray-500 hover:text-gray-700"
-                  >
-                    Sign out
-                  </button>
+                  <div className="flex space-x-4">
+                    <button
+                      onClick={() => navigate('/profile/settings')}
+                      className="text-xs text-indigo-600 hover:text-indigo-700"
+                    >
+                      Settings
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="text-xs text-gray-500 hover:text-gray-700"
+                    >
+                      Sign out
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

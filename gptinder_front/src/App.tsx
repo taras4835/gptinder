@@ -7,6 +7,7 @@ import { getCurrentUser } from './features/auth/authSlice';
 // Import pages
 import Login from './features/auth/Login';
 import Register from './features/auth/Register';
+import ProfileSettings from './features/auth/ProfileSettings';
 import ChatLayout from './features/chat/ChatLayout';
 import ChatWindow from './features/chat/ChatWindow';
 
@@ -39,6 +40,11 @@ function App() {
     <Routes>
       <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
       <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
+      <Route path="/profile/settings" element={
+        <ProtectedRoute>
+          <ProfileSettings />
+        </ProtectedRoute>
+      } />
       
       <Route path="/" element={
         <ProtectedRoute>

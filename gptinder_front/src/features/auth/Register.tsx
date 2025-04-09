@@ -7,28 +7,16 @@ import { register, clearError } from './authSlice';
 const Register = () => {
   const [formData, setFormData] = useState({
     username: '',
-    email: '',
     password: '',
     password_confirm: '',
-    first_name: '',
-    last_name: '',
-    bio: '',
-    interests: '',
   });
   
-  const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const { isLoading, error } = useSelector((state: RootState) => state.auth);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setProfilePicture(e.target.files[0]);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,11 +29,6 @@ const Register = () => {
     Object.entries(formData).forEach(([key, value]) => {
       data.append(key, value);
     });
-    
-    // Add profile picture if available
-    if (profilePicture) {
-      data.append('profile_picture', profilePicture);
-    }
     
     dispatch(register(data));
   };
@@ -80,18 +63,6 @@ const Register = () => {
             </div>
             
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="input-field"
-              />
-            </div>
-            
-            <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password*</label>
               <input
                 id="password"
@@ -114,69 +85,6 @@ const Register = () => {
                 value={formData.password_confirm}
                 onChange={handleChange}
                 className="input-field"
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">First Name</label>
-                <input
-                  id="first_name"
-                  name="first_name"
-                  type="text"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  className="input-field"
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">Last Name</label>
-                <input
-                  id="last_name"
-                  name="last_name"
-                  type="text"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  className="input-field"
-                />
-              </div>
-            </div>
-            
-            <div>
-              <label htmlFor="profile_picture" className="block text-sm font-medium text-gray-700">Profile Picture</label>
-              <input
-                id="profile_picture"
-                name="profile_picture"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="input-field"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700">Bio</label>
-              <textarea
-                id="bio"
-                name="bio"
-                value={formData.bio}
-                onChange={handleChange}
-                className="input-field"
-                rows={3}
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="interests" className="block text-sm font-medium text-gray-700">Interests</label>
-              <textarea
-                id="interests"
-                name="interests"
-                value={formData.interests}
-                onChange={handleChange}
-                className="input-field"
-                rows={3}
-                placeholder="Share your interests, separated by commas"
               />
             </div>
           </div>
