@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { fetchChat, sendMessage } from './chatSlice';
 import { 
-  fetchUserChats, 
   sendUserMessage, 
   markUserChatRead
 } from '../recommendations/recommendationsSlice';
