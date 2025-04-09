@@ -36,12 +36,12 @@ MEDIA_URL = f'https://{AWS_S3_ENDPOINT_URL}/{PUBLIC_MEDIA_LOCATION}/'
 
 STORAGES = {
     "default": {
-        "BACKEND": 'homecheck.cdn.backends.MediaRootS3Boto3Storage',
+        "BACKEND": 'gptinder_back.cdn.backends.MediaRootS3Boto3Storage',
         "OPTIONS": {
         },
     },
     "staticfiles": {
-        "BACKEND": 'homecheck.cdn.backends.StaticRootS3Boto3Storage',
+        "BACKEND": 'gptinder_back.cdn.backends.StaticRootS3Boto3Storage',
         "OPTIONS": {
         },
     },
