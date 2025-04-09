@@ -5,3 +5,14 @@ python-dotenv==1.0.1
 openai==1.69.0
 Pillow==10.2.0
 numpy==1.26.4 
+boto3
+dj-database-url
+django-celery-beat
+django-filter
+django-redis
+django-storages
+psycopg2
+psycopg2-binary
+redis
+pyTelegramBotAPI
+drf-yasg
