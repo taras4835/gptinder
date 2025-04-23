@@ -39,6 +39,7 @@ export const fetchChats = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await chatApi.getChats();
+      console.log('API response data:', response.data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.detail || 'Failed to fetch chats');
@@ -104,9 +105,28 @@ const chatSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(fetchChats.fulfilled, (state, action: PayloadAction<Chat[]>) => {
+      .addCase(fetchChats.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.chats = action.payload;
+        
+        console.log('Raw fetchChats response:', action.payload);
+        
+        // Handle paginated response from Django REST framework
+        if (action.payload && typeof action.payload === 'object') {
+          if (Array.isArray(action.payload)) {
+            // Direct array response
+            state.chats = action.payload;
+          } else if (action.payload.results && Array.isArray(action.payload.results)) {
+            // Paginated response with results field
+            state.chats = action.payload.results;
+          } else {
+            // Fallback to empty array
+            state.chats = [];
+          }
+        } else {
+          state.chats = [];
+        }
+        
+        console.log('Processed chats:', state.chats);
       })
       .addCase(fetchChats.rejected, (state, action) => {
         state.isLoading = false;
@@ -121,6 +141,11 @@ const chatSlice = createSlice({
       .addCase(fetchChat.fulfilled, (state, action: PayloadAction<Chat>) => {
         state.isLoading = false;
         state.currentChat = action.payload;
+        
+        // Ensure chats is an array
+        if (!Array.isArray(state.chats)) {
+          state.chats = [];
+        }
         
         // Update the chat in the list
         const index = state.chats.findIndex(chat => chat.id === action.payload.id);
@@ -152,9 +177,41 @@ const chatSlice = createSlice({
       })
       
       // Send message
-      .addCase(sendMessage.pending, (state) => {
+      .addCase(sendMessage.pending, (state, action) => {
         state.isLoading = true;
         state.error = null;
+        
+        // Add user message immediately to UI for better UX
+        // We extract the payload from the action's meta
+        const { chatId, content } = action.meta.arg;
+        
+        if (state.currentChat && state.currentChat.id === chatId) {
+          // Create a temporary message with a negative ID (will be replaced later)
+          const tempMessage: Message = {
+            id: -Date.now(), // Temporary negative ID to distinguish it
+            role: 'user',
+            content: content,
+            created_at: new Date().toISOString()
+          };
+          
+          // Add to current chat
+          state.currentChat.messages.push(tempMessage);
+          
+          // Ensure chats is an array
+          if (!Array.isArray(state.chats)) {
+            state.chats = [];
+          }
+          
+          // Also update in the chats list if present
+          const chatIndex = state.chats.findIndex(chat => chat.id === chatId);
+          if (chatIndex !== -1) {
+            if (!state.chats[chatIndex].messages) {
+              state.chats[chatIndex].messages = [];
+            }
+            state.chats[chatIndex].messages.push(tempMessage);
+            state.chats[chatIndex].updated_at = new Date().toISOString();
+          }
+        }
       })
       .addCase(sendMessage.fulfilled, (state, action: PayloadAction<{ chatId: number; message: Message }>) => {
         state.isLoading = false;
@@ -164,10 +221,24 @@ const chatSlice = createSlice({
           state.currentChat.messages.push(action.payload.message);
         }
         
+        // Ensure chats is an array
+        if (!Array.isArray(state.chats)) {
+          state.chats = [];
+        }
+        
         // Update the chat in the list
         const chatIndex = state.chats.findIndex(chat => chat.id === action.payload.chatId);
         if (chatIndex !== -1) {
+          // Ensure we update the message list in the chat list too
+          if (!state.chats[chatIndex].messages) {
+            state.chats[chatIndex].messages = [];
+          }
+          state.chats[chatIndex].messages.push(action.payload.message);
           state.chats[chatIndex].updated_at = new Date().toISOString();
+          
+          // Move chat to top of list (most recent first)
+          const chat = state.chats.splice(chatIndex, 1)[0];
+          state.chats.unshift(chat);
         }
       })
       .addCase(sendMessage.rejected, (state, action) => {

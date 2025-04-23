@@ -28,10 +28,19 @@ const ChatLayout = () => {
   } = useSelector((state: RootState) => state.recommendations);
   
   useEffect(() => {
+    // Fetch initial data
     dispatch(fetchChats());
     dispatch(fetchRecommendations());
     dispatch(fetchUserChats());
   }, [dispatch]);
+  
+  // Force fetch chats when tab changes to AI
+  useEffect(() => {
+    if (activeTab === 'ai') {
+      console.log('Forcing chat refresh on tab change');
+      dispatch(fetchChats());
+    }
+  }, [activeTab, dispatch]);
   
   const handleCreateChat = () => {
     dispatch(createChat('')).then((result) => {
@@ -112,10 +121,19 @@ const ChatLayout = () => {
             
             <div className="flex-1 overflow-y-auto">
               {activeTab === 'ai' && (
-                <ChatList 
-                  chats={Array.isArray(chats) ? chats : []} 
-                  isLoading={chatsLoading} 
-                />
+                <>
+                  {/* Debug info */}
+                  {import.meta.env.DEV && (
+                    <div className="p-2 text-xs text-gray-400">
+                      Chats Array: {Array.isArray(chats) ? 'Yes' : 'No'}, 
+                      Length: {Array.isArray(chats) ? chats.length : 'N/A'}
+                    </div>
+                  )}
+                  <ChatList 
+                    chats={Array.isArray(chats) ? chats : []} 
+                    isLoading={chatsLoading} 
+                  />
+                </>
               )}
               
               {activeTab === 'people' && (

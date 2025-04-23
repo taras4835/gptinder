@@ -54,12 +54,27 @@ const ChatWindow = ({ isUserChat = false }: ChatWindowProps) => {
     
     if (!message.trim() || !chatId) return;
     
+    // Create a temporary user message to display immediately
+    const tempUserMessage = {
+      id: Date.now(), // temporary ID
+      role: 'user',
+      content: message,
+      created_at: new Date().toISOString()
+    };
+    
     if (isUserChat) {
       dispatch(sendUserMessage({
         chatId: parseInt(chatId),
         content: message
       }));
     } else {
+      // Optionally add the message to the UI before the API response
+      if (currentChat && currentChat.messages) {
+        // This is just visual feedback, the actual update will happen in reducer
+        const updatedMessages = [...currentChat.messages, tempUserMessage];
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
+      
       dispatch(sendMessage({
         chatId: parseInt(chatId),
         content: message
