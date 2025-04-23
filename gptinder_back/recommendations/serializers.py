@@ -11,9 +11,10 @@ class UserRecommendationSerializer(serializers.ModelSerializer):
         model = UserRecommendation
         fields = (
             'id', 'recommended_user', 'similarity_score', 
-            'common_interests', 'created_at', 'is_viewed'
+            'common_interests', 'created_at', 'is_viewed',
+            'explanation'
         )
-        read_only_fields = ('id', 'recommended_user', 'similarity_score', 'common_interests', 'created_at')
+        read_only_fields = ('id', 'recommended_user', 'similarity_score', 'common_interests', 'created_at', 'explanation')
 
 
 class UserMessageSerializer(serializers.ModelSerializer):

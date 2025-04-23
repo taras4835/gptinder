@@ -10,10 +10,10 @@ django-celery-beat
 django-filter
 django-redis
 django-storages
-psycopg2
 psycopg2-binary
 redis
 pyTelegramBotAPI
 drf-yasg
 gunicorn
 pillow
+pinecone

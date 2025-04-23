@@ -20,6 +20,10 @@ class UserRecommendation(models.Model):
     created_at = models.DateTimeField(_("Created at"), auto_now_add=True)
     is_viewed = models.BooleanField(_("Is Viewed"), default=False)
     
+    # Add explanation field
+    explanation = models.TextField(_("Explanation"), blank=True, null=True, 
+                                  help_text=_("Personalized explanation of why these users might be interested in talking to each other"))
+    
     class Meta:
         ordering = ['-similarity_score']
         unique_together = ['user', 'recommended_user']

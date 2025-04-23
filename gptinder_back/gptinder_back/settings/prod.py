@@ -3,17 +3,24 @@ from .base import *
 
 DEBUG = True
 
+# Отключаем некоторые настройки безопасности для совместимости с CORS
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
+# Максимально ослабленные настройки CORS для продакшн
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ['*']
+CORS_ALLOW_METHODS = ['*']
+CORS_EXPOSE_HEADERS = ['*']
+CORS_ALLOW_PRIVATE_NETWORK = True
+CORS_PREFLIGHT_MAX_AGE = 86400  # 1 day
+
 # База данных для продакшн
 DATABASES = {
         "default": dj_database_url.parse(os.getenv("DATABASE_URL")),
 }
-
-
-
-# Дополнительные настройки безопасности
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
 
 
 

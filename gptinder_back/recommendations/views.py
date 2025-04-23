@@ -11,7 +11,7 @@ from .serializers import (
     UserRecommendationSerializer, UserChatSerializer, 
     UserMessageSerializer, MessageRequestSerializer
 )
-from ai_chat.models import Message as AIMessage
+from .embeddings import EmbeddingService
 
 User = get_user_model()
 
@@ -31,75 +31,41 @@ class UserRecommendationViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=['post'])
     def generate(self, request):
         """
-        Generate or regenerate user recommendations based on chat history
+        Generate or regenerate user recommendations based on user embeddings
         """
-        # Delete existing recommendations
-        UserRecommendation.objects.filter(user=request.user).delete()
-        
-        # Get all users who have spoken with the AI
-        users_with_chats = User.objects.filter(
-            ~Q(id=request.user.id),  # Exclude the current user
-            ai_chats__messages__embedding__isnull=False  # Users with message embeddings
-        ).distinct()
-        
-        if not users_with_chats.exists():
-            return Response({"detail": "No users with chat history found for recommendations."})
-        
-        # Get the current user's chat messages with embeddings
-        user_messages = AIMessage.objects.filter(
-            chat__user=request.user,
-            embedding__isnull=False
-        )
-        
-        if not user_messages.exists():
-            return Response({"detail": "You don't have enough chat history for recommendations."})
-        
-        # Calculate average embeddings for the current user
-        user_embeddings = [np.array(msg.embedding) for msg in user_messages]
-        user_avg_embedding = np.mean(user_embeddings, axis=0)
-        
-        recommendations = []
-        
-        for other_user in users_with_chats:
-            # Get the other user's messages with embeddings
-            other_user_messages = AIMessage.objects.filter(
-                chat__user=other_user,
-                embedding__isnull=False
+        try:
+            # Initialize the embedding service
+            embedding_service = EmbeddingService()
+            
+            # Generate or update embedding for current user
+            user_embedding = embedding_service.generate_user_embedding(request.user)
+            
+            if not user_embedding:
+                return Response(
+                    {"detail": "Couldn't generate embeddings for your profile. Please add more information to your interests and bio."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Generate recommendations
+            num_recommendations = embedding_service.generate_recommendations(request.user.id)
+            
+            if num_recommendations == 0:
+                return Response(
+                    {"detail": "No recommendations found. Try adding more to your interests and bio."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+            # Get and return the recommendations
+            recommendations = UserRecommendation.objects.filter(user=request.user)
+            serializer = self.get_serializer(recommendations, many=True)
+            
+            return Response(serializer.data)
+            
+        except Exception as e:
+            return Response(
+                {"detail": f"Error generating recommendations: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-            
-            if not other_user_messages.exists():
-                continue
-            
-            # Calculate average embeddings for the other user
-            other_user_embeddings = [np.array(msg.embedding) for msg in other_user_messages]
-            other_user_avg_embedding = np.mean(other_user_embeddings, axis=0)
-            
-            # Calculate cosine similarity
-            similarity = np.dot(user_avg_embedding, other_user_avg_embedding) / (
-                np.linalg.norm(user_avg_embedding) * np.linalg.norm(other_user_avg_embedding)
-            )
-            
-            # Determine common interests (topics)
-            # This is a simplified approach - in a real app, you might use more sophisticated topic modeling
-            user_topics = set([word.lower() for msg in user_messages for word in msg.content.split() if len(word) > 5])
-            other_user_topics = set([word.lower() for msg in other_user_messages for word in msg.content.split() if len(word) > 5])
-            common_topics = user_topics.intersection(other_user_topics)
-            
-            # Create the recommendation
-            recommendation = UserRecommendation.objects.create(
-                user=request.user,
-                recommended_user=other_user,
-                similarity_score=float(similarity),
-                common_interests=list(common_topics)[:10]  # Limit to 10 common topics
-            )
-            
-            recommendations.append(recommendation)
-        
-        # Sort by similarity score and return
-        recommendations.sort(key=lambda x: x.similarity_score, reverse=True)
-        serializer = self.get_serializer(recommendations, many=True)
-        
-        return Response(serializer.data)
     
     @action(detail=True, methods=['post'])
     def mark_viewed(self, request, pk=None):

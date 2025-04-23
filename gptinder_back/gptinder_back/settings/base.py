@@ -5,7 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Секретный ключ
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-secret-key')
 
 # Отладка
 DEBUG = True
@@ -48,8 +48,11 @@ MIDDLEWARE = [
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-
 CORS_ALLOW_HEADERS = ['*']
+CORS_ALLOW_METHODS = ['*']
+CORS_EXPOSE_HEADERS = ['*']
+CORS_ALLOW_PRIVATE_NETWORK = True
+CORS_PREFLIGHT_MAX_AGE = 86400  # 1 day
 
 ROOT_URLCONF = 'gptinder_back.urls'
 
