@@ -1,0 +1,30 @@
+{
+  "user_embedding": {
+    "total_comparisons": 6,
+    "successful_pairs": 0,
+    "success_rate": 0.0,
+    "gini": 0,
+    "metric": 0.0
+  },
+  "brute_force": {
+    "total_comparisons": 75,
+    "successful_pairs": 16,
+    "success_rate": 0.21333333333333335,
+    "gini": 0.14583333333333348,
+    "metric": 0.1822222222222222
+  },
+  "message_embedding": {
+    "total_comparisons": 12,
+    "successful_pairs": 9,
+    "success_rate": 0.75,
+    "gini": 0.2592592592592593,
+    "metric": 0.5555555555555556
+  },
+  "combined": {
+    "total_comparisons": 32,
+    "successful_pairs": 19,
+    "success_rate": 0.59375,
+    "gini": 0.22807017543859653,
+    "metric": 0.4583333333333333
+  }
+}
